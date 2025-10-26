@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Page d'Accueil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #282A36;
+            color: #F8F8F2;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            background: #44475A;
+            color: #8BE9FD;
+            border: 2px solid #6272A4;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .header-btn:hover {
+            background: #6272A4;
+            border-color: #8BE9FD;
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            color: #BD93F9;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            color: #8BE9FD;
+            font-size: 1.1em;
+        }
+
+        .search-container {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 600px;
+            padding: 15px 20px;
+            background: #44475A;
+            border: 2px solid #6272A4;
+            border-radius: 25px;
+            color: #F8F8F2;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-box:focus {
+            border-color: #BD93F9;
+        }
+
+        .add-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #BD93F9, #FF79C6);
+            border: none;
+            border-radius: 50%;
+            color: #282A36;
+            font-size: 2em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(189, 147, 249, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 1000;
+        }
+
+        .add-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(189, 147, 249, 0.6);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 100px;
+        }
+
+        .service-card {
+            background: #44475A;
+            border-radius: 12px;
+            padding: 18px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border-color: #BD93F9;
+        }
+
+        .service-icon {
+            font-size: 2.2em;
+            margin-bottom: 8px;
+        }
+
+        .service-icon img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .service-name {
+            font-size: 0.95em;
+            font-weight: bold;
+            color: #F8F8F2;
+            margin-bottom: 4px;
+        }
+
+        .service-url {
+            font-size: 0.7em;
+            color: #8BE9FD;
+            word-break: break-all;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #FF5555;
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            color: #F8F8F2;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-btn {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #8BE9FD;
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            color: #282A36;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-card:hover .delete-btn,
+        .service-card:hover .edit-btn {
+            opacity: 1;
+        }
+
+        .delete-btn:hover {
+            background: #FF79C6;
+        }
+
+        .edit-btn:hover {
+            background: #BD93F9;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #44475A;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            color: #BD93F9;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #8BE9FD;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: #282A36;
+            border: 2px solid #6272A4;
+            border-radius: 8px;
+            color: #F8F8F2;
+            font-size: 1em;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #BD93F9;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #BD93F9, #FF79C6);
+            color: #282A36;
+        }
+
+        .btn-secondary {
+            background: #6272A4;
+            color: #F8F8F2;
+        }
+
+        .image-upload-btn {
+            background: #8BE9FD;
+            color: #282A36;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .image-upload-btn:hover {
+            background: #BD93F9;
+        }
+
+        /* Color picker */
+        .color-picker {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: #F8F8F2;
+            transform: scale(1.15);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-buttons">
+                <button class="header-btn" onclick="exportServices()" title="Ctrl+S">💾 Sauvegarder</button>
+                <button class="header-btn" onclick="importServices()" title="Ctrl+O">📥 Charger</button>
+            </div>
+            <h1>🌟 Ma Page d'Accueil</h1>
+            <p class="subtitle">Accès rapide à vos services favoris</p>
+        </header>
+
+        <div class="search-container">
+            <input type="text" class="search-box" id="searchBox" placeholder="🔍 Rechercher un service...">
+        </div>
+
+        <div class="services-grid" id="servicesGrid">
+            <!-- Les services seront ajoutés ici dynamiquement -->
+        </div>
+    </div>
+
+    <button class="add-button" id="addButton" title="Ajouter un service">+</button>
+
+    <!-- Modal pour ajouter un service -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 class="modal-header" id="modalTitle">➕ Nouveau Service</h2>
+            <form id="serviceForm">
+                <div class="form-group">
+                    <label for="serviceName">Nom du service</label>
+                    <input type="text" id="serviceName" required placeholder="Ex: YouTube">
+                </div>
+                <div class="form-group">
+                    <label for="serviceUrl">URL</label>
+                    <input type="url" id="serviceUrl" required placeholder="Ex: https://youtube.com">
+                </div>
+                <div class="form-group">
+                    <label for="serviceIcon">Icône</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="serviceIcon" placeholder="Ex: 🎬 (emoji)" maxlength="2" style="flex: 1;">
+                        <span style="color: #8BE9FD;">ou</span>
+                        <label for="imageUpload" class="image-upload-btn">
+                            📷 Image
+                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                        </label>
+                    </div>
+                    <div id="imagePreview" style="margin-top: 10px; display: none;">
+                        <img id="previewImg" style="width: 64px; height: 64px; object-fit: contain; border-radius: 8px; background: #282A36; padding: 5px;">
+                        <button type="button" id="removeImage" style="margin-left: 10px; background: #FF5555; color: #F8F8F2; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Supprimer</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Couleur de la carte</label>
+                    <div class="color-picker">
+                        <div class="color-option selected" data-color="#6272A4" style="background: #6272A4;"></div>
+                        <div class="color-option" data-color="#FF5555" style="background: #FF5555;"></div>
+                        <div class="color-option" data-color="#50FA7B" style="background: #50FA7B;"></div>
+                        <div class="color-option" data-color="#8BE9FD" style="background: #8BE9FD;"></div>
+                        <div class="color-option" data-color="#BD93F9" style="background: #BD93F9;"></div>
+                        <div class="color-option" data-color="#FF79C6" style="background: #FF79C6;"></div>
+                        <div class="color-option" data-color="#F1FA8C" style="background: #F1FA8C;"></div>
+                        <div class="color-option" data-color="#FFB86C" style="background: #FFB86C;"></div>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" id="cancelButton">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="submitButton">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const JSON_FILE = 'services.json';
+        const IMAGES_FOLDER = 'images/';
+        
+        // Services par défaut
+        const defaultServices = [
+            { name: 'YouTube', url: 'https://youtube.com', icon: '🎬', iconType: 'emoji', color: '#FF5555' },
+            { name: 'Gmail', url: 'https://mail.google.com', icon: '📧', iconType: 'emoji', color: '#50FA7B' },
+            { name: 'GitHub', url: 'https://github.com', icon: '💻', iconType: 'emoji', color: '#BD93F9' },
+            { name: 'Netflix', url: 'https://netflix.com', icon: '🍿', iconType: 'emoji', color: '#FF79C6' },
+            { name: 'Twitter', url: 'https://twitter.com', icon: '🐦', iconType: 'emoji', color: '#8BE9FD' },
+            { name: 'Reddit', url: 'https://reddit.com', icon: '🤖', iconType: 'emoji', color: '#FFB86C' }
+        ];
+
+        let services = [];
+        let selectedColor = '#6272A4';
+        let editingIndex = null;
+        let currentImageFile = null;
+
+        const servicesGrid = document.getElementById('servicesGrid');
+        const modal = document.getElementById('modal');
+        const addButton = document.getElementById('addButton');
+        const cancelButton = document.getElementById('cancelButton');
+        const serviceForm = document.getElementById('serviceForm');
+        const searchBox = document.getElementById('searchBox');
+        const modalTitle = document.getElementById('modalTitle');
+        const submitButton = document.getElementById('submitButton');
+        const imageUpload = document.getElementById('imageUpload');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const removeImageBtn = document.getElementById('removeImage');
+        const serviceIconInput = document.getElementById('serviceIcon');
+
+        // Charger les services : JSON en priorité, puis localStorage
+        async function loadServices() {
+            // D'abord essayer de charger depuis le fichier JSON
+            try {
+                const response = await fetch(JSON_FILE + '?t=' + new Date().getTime());
+                if (response.ok) {
+                    const data = await response.json();
+                    services = data.services || defaultServices;
+                    console.log('✅ Services chargés depuis services.json');
+                    saveToLocalStorage();
+                    renderServices();
+                    return;
+                }
+            } catch (error) {
+                console.log('⚠️ services.json non trouvé');
+            }
+            
+            // Si pas de JSON, essayer localStorage
+            const storedServices = localStorage.getItem('homepage_services');
+            if (storedServices) {
+                try {
+                    services = JSON.parse(storedServices);
+                    console.log('✅ Services chargés depuis localStorage');
+                    renderServices();
+                    return;
+                } catch (e) {
+                    console.error('Erreur localStorage:', e);
+                }
+            }
+            
+            // Sinon utiliser les services par défaut
+            console.log('ℹ️ Utilisation des services par défaut');
+            services = defaultServices;
+            saveToLocalStorage();
+            renderServices();
+        }
+
+        // Sauvegarder dans localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('homepage_services', JSON.stringify(services));
+            console.log('💾 Sauvegarde localStorage effectuée');
+        }
+
+        // Gestion de l'upload d'image
+        imageUpload.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                currentImageFile = file;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewImg.src = event.target.result;
+                    imagePreview.style.display = 'block';
+                    serviceIconInput.value = '';
+                    serviceIconInput.disabled = true;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // Supprimer l'image uploadée
+        removeImageBtn.onclick = () => {
+            currentImageFile = null;
+            imagePreview.style.display = 'none';
+            imageUpload.value = '';
+            serviceIconInput.disabled = false;
+        };
+
+        // Afficher les services
+        function renderServices(servicesToRender = services) {
+            servicesGrid.innerHTML = '';
+            servicesToRender.forEach((service, index) => {
+                const card = document.createElement('div');
+                card.className = 'service-card';
+                card.style.background = service.color;
+                
+                let iconHtml;
+                if (service.iconType === 'image') {
+                    iconHtml = `<img src="${service.icon}" alt="icon" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><text y=%2230%22 font-size=%2230%22>❓</text></svg>'">`;
+                } else {
+                    iconHtml = service.icon;
+                }
+                
+                card.innerHTML = `
+                    <button class="edit-btn" onclick="editService(${index})">✏️</button>
+                    <button class="delete-btn" onclick="deleteService(${index})">×</button>
+                    <div class="service-icon">${iconHtml}</div>
+                    <div class="service-name">${service.name}</div>
+                    <div class="service-url">${service.url}</div>
+                `;
+                card.onclick = (e) => {
+                    if (!e.target.classList.contains('delete-btn') && !e.target.classList.contains('edit-btn')) {
+                        window.open(service.url, '_blank');
+                    }
+                };
+                servicesGrid.appendChild(card);
+            });
+        }
+
+        // Ouvrir le modal en mode ajout
+        function openAddModal() {
+            editingIndex = null;
+            currentImageFile = null;
+            modalTitle.textContent = '➕ Nouveau Service';
+            submitButton.textContent = 'Ajouter';
+            serviceForm.reset();
+            selectedColor = '#6272A4';
+            updateColorPicker();
+            imagePreview.style.display = 'none';
+            serviceIconInput.disabled = false;
+            modal.classList.add('active');
+        }
+
+        // Ouvrir le modal en mode édition
+        function editService(index) {
+            editingIndex = index;
+            const service = services[index];
+            
+            modalTitle.textContent = '✏️ Modifier le Service';
+            submitButton.textContent = 'Modifier';
+            
+            document.getElementById('serviceName').value = service.name;
+            document.getElementById('serviceUrl').value = service.url;
+            
+            if (service.iconType === 'image') {
+                currentImageFile = null;
+                previewImg.src = service.icon;
+                imagePreview.style.display = 'block';
+                serviceIconInput.value = '';
+                serviceIconInput.disabled = true;
+            } else {
+                serviceIconInput.value = service.icon;
+                currentImageFile = null;
+                imagePreview.style.display = 'none';
+                serviceIconInput.disabled = false;
+            }
+            
+            selectedColor = service.color;
+            updateColorPicker();
+            
+            modal.classList.add('active');
+        }
+
+        // Ajouter ou modifier un service
+        serviceForm.onsubmit = (e) => {
+            e.preventDefault();
+            
+            let iconValue, iconType;
+            
+            if (currentImageFile || (editingIndex !== null && services[editingIndex].iconType === 'image' && imagePreview.style.display !== 'none')) {
+                if (currentImageFile) {
+                    const fileName = currentImageFile.name;
+                    iconValue = IMAGES_FOLDER + fileName;
+                    showNotification(`📷 Placez "${fileName}" dans le dossier images/`, '#FFB86C');
+                } else {
+                    iconValue = services[editingIndex].icon;
+                }
+                iconType = 'image';
+            } else {
+                iconValue = serviceIconInput.value.trim();
+                iconType = 'emoji';
+                
+                if (!iconValue) {
+                    showNotification('⚠️ Veuillez ajouter un emoji ou une image', '#FFB86C');
+                    return;
+                }
+            }
+            
+            const serviceData = {
+                name: document.getElementById('serviceName').value,
+                url: document.getElementById('serviceUrl').value,
+                icon: iconValue,
+                iconType: iconType,
+                color: selectedColor
+            };
+
+            if (editingIndex !== null) {
+                services[editingIndex] = serviceData;
+                showNotification('✏️ Service modifié ! Pensez à sauvegarder (Ctrl+S)', '#50FA7B');
+            } else {
+                services.push(serviceData);
+                showNotification('✅ Service ajouté ! Pensez à sauvegarder (Ctrl+S)', '#50FA7B');
+            }
+
+            saveToLocalStorage();
+            renderServices();
+            modal.classList.remove('active');
+            serviceForm.reset();
+            selectedColor = '#6272A4';
+            editingIndex = null;
+            currentImageFile = null;
+            imagePreview.style.display = 'none';
+            serviceIconInput.disabled = false;
+            updateColorPicker();
+        };
+
+        // Supprimer un service
+        function deleteService(index) {
+            if (confirm('Voulez-vous vraiment supprimer ce service ?')) {
+                const service = services[index];
+                if (service.iconType === 'image') {
+                    showNotification(`🗑️ Pensez à supprimer: ${service.icon}`, '#FFB86C');
+                }
+                services.splice(index, 1);
+                saveToLocalStorage();
+                renderServices();
+                showNotification('🗑️ Service supprimé ! Pensez à sauvegarder (Ctrl+S)', '#FF5555');
+            }
+        }
+
+        // Afficher une notification
+        function showNotification(message, bgColor = '#50FA7B') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${bgColor};
+                color: #282A36;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                z-index: 3000;
+                font-weight: bold;
+                animation: slideIn 0.3s ease-out;
+                max-width: 400px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Recherche
+        searchBox.oninput = (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = services.filter(service => 
+                service.name.toLowerCase().includes(searchTerm) || 
+                service.url.toLowerCase().includes(searchTerm)
+            );
+            renderServices(filtered);
+        };
+
+        // Gestion du modal
+        addButton.onclick = openAddModal;
+        cancelButton.onclick = () => {
+            modal.classList.remove('active');
+            serviceForm.reset();
+            selectedColor = '#6272A4';
+            editingIndex = null;
+            currentImageFile = null;
+            imagePreview.style.display = 'none';
+            serviceIconInput.disabled = false;
+            updateColorPicker();
+        };
+
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                serviceForm.reset();
+                selectedColor = '#6272A4';
+                editingIndex = null;
+                currentImageFile = null;
+                imagePreview.style.display = 'none';
+                serviceIconInput.disabled = false;
+                updateColorPicker();
+            }
+        };
+
+        // Gestion des couleurs
+        const colorOptions = document.querySelectorAll('.color-option');
+        colorOptions.forEach(option => {
+            option.onclick = () => {
+                selectedColor = option.dataset.color;
+                updateColorPicker();
+            };
+        });
+
+        function updateColorPicker() {
+            colorOptions.forEach(option => {
+                option.classList.toggle('selected', option.dataset.color === selectedColor);
+            });
+        }
+
+        // Exporter les services en JSON (Sauvegarder)
+        function exportServices() {
+            const dataStr = JSON.stringify({ services: services }, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = JSON_FILE;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotification('💾 services.json téléchargé ! Remplacez-le à la racine', '#8BE9FD');
+        }
+
+        // Importer les services depuis JSON (Charger)
+        function importServices() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            if (data.services && Array.isArray(data.services)) {
+                                services = data.services;
+                                saveToLocalStorage();
+                                renderServices();
+                                showNotification('📥 Services chargés !', '#50FA7B');
+                            } else {
+                                showNotification('❌ Fichier JSON invalide', '#FF5555');
+                            }
+                        } catch (e) {
+                            showNotification('❌ Erreur de lecture du fichier', '#FF5555');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                exportServices();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+                e.preventDefault();
+                importServices();
+            }
+        });
+
+        // Initialisation
+        loadServices();
+    </script>
+</body>
+</html>

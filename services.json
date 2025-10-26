@@ -1,0 +1,46 @@
+{
+  "services": [
+    {
+      "name": "YouTube",
+      "url": "https://youtube.com",
+      "icon": "🎬",
+      "iconType": "emoji",
+      "color": "#FF5555"
+    },
+    {
+      "name": "Gmail",
+      "url": "https://mail.google.com",
+      "icon": "📧",
+      "iconType": "emoji",
+      "color": "#50FA7B"
+    },
+    {
+      "name": "GitHub",
+      "url": "https://github.com",
+      "icon": "💻",
+      "iconType": "emoji",
+      "color": "#BD93F9"
+    },
+    {
+      "name": "Netflix",
+      "url": "https://netflix.com",
+      "icon": "🍿",
+      "iconType": "emoji",
+      "color": "#FF79C6"
+    },
+    {
+      "name": "Twitter",
+      "url": "https://twitter.com",
+      "icon": "🐦",
+      "iconType": "emoji",
+      "color": "#8BE9FD"
+    },
+    {
+      "name": "Reddit",
+      "url": "https://reddit.com",
+      "icon": "🤖",
+      "iconType": "emoji",
+      "color": "#FFB86C"
+    }
+  ]
+}
