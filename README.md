@@ -27,6 +27,7 @@ C'est tout ! 🎉
 - ✏️ **Modifier** les services existants (bouton en haut à gauche)
 - 🗑️ **Supprimer** des services (bouton en haut à droite)
 - 🖐️ **Réorganiser** par glisser-déposer
+- 📐 **Séparateurs visuels** - Créez des sections (Travail, Loisirs, etc.)
 - 🔍 **Rechercher** parmi vos services
 - 🎨 **Personnaliser** avec 8 couleurs Dracula
 - 💾 **Sauvegarder** facilement (Ctrl+S)
@@ -83,6 +84,77 @@ C'est tout ! 🎉
 6. ⚠️ **N'oubliez pas de sauvegarder !** (Ctrl+S)
 
 **Astuce :** Vous pouvez réorganiser vos services par ordre de fréquence d'utilisation, par catégorie, ou comme vous voulez !
+
+### 📐 Créer des séparateurs (sections)
+
+Les séparateurs permettent d'organiser vos services en sections visuelles comme "Travail", "Loisirs", "Outils", etc.
+
+#### Ajouter un séparateur
+
+**Méthode rapide :**
+1. Cliquez sur **📐 Séparateur** en haut à droite
+2. Le formulaire s'ouvre directement en mode séparateur
+3. Remplissez :
+   - **Titre** : "Travail", "Loisirs", "Outils"... (optionnel)
+   - **Icône** : 📊, 🎮, 💼, 🎨, ⚙️... (optionnel)
+   - **Couleur** : Choisissez une couleur pour le séparateur
+4. Cliquez sur **Ajouter**
+5. ⚠️ **N'oubliez pas de sauvegarder !** (Ctrl+S)
+
+**Méthode alternative :**
+1. Cliquez sur le bouton **+**
+2. Sélectionnez **📐 Séparateur** (au lieu de 🔗 Service)
+3. Remplissez le formulaire
+4. Validez
+
+#### Caractéristiques des séparateurs
+- ✅ **Largeur complète** - S'étend sur toute la ligne
+- ✅ **Glisser-déposer** - Déplacez-les comme les services
+- ✅ **Personnalisables** - Titre, icône et couleur au choix
+- ✅ **Supprimables** - Bouton × à droite
+
+#### Exemples d'organisation
+
+**Exemple 1 : Par catégorie**
+```
+🎬 YouTube    📧 Gmail    💻 GitHub    📱 Twitter
+
+━━━━━━━━━━━━━━ 📊 Travail ━━━━━━━━━━━━━━
+
+📊 Analytics  📝 Docs     💼 Slack     📅 Calendar
+
+━━━━━━━━━━━━━━ 🎮 Loisirs ━━━━━━━━━━━━━━
+
+🎮 Steam      🎵 Spotify  📺 Netflix   🍿 Twitch
+```
+
+**Exemple 2 : Par fréquence**
+```
+━━━━━━━━━━━━━━ ⭐ Quotidien ━━━━━━━━━━━━━━
+
+📧 Gmail      📝 Notion   💼 Slack
+
+━━━━━━━━━━━━━━ 📅 Hebdomadaire ━━━━━━━━━━━━━━
+
+📊 Analytics  📈 Reports  💰 Finance
+
+━━━━━━━━━━━━━━ 🔧 Occasionnel ━━━━━━━━━━━━━━
+
+⚙️ Settings   🗄️ Archive  🔐 Admin
+```
+
+**Exemple 3 : Par projet**
+```
+━━━━━━━━━━━━━━ 🚀 Projet Alpha ━━━━━━━━━━━━━━
+
+💻 GitHub     📝 Docs     💬 Slack
+
+━━━━━━━━━━━━━━ 🌟 Projet Beta ━━━━━━━━━━━━━━
+
+🔧 GitLab     📊 Jira     🎨 Figma
+```
+
+**Astuce :** Vous pouvez créer des séparateurs sans titre ni icône pour de simples lignes de séparation !
 
 ### 🔍 Rechercher un service
 - Tapez dans la barre de recherche en haut
@@ -155,6 +227,7 @@ Sur l'ordinateur 2 :
 {
   "services": [
     {
+      "type": "service",
       "name": "YouTube",
       "url": "https://youtube.com",
       "icon": "🎬",
@@ -162,6 +235,13 @@ Sur l'ordinateur 2 :
       "color": "#FF5555"
     },
     {
+      "type": "separator",
+      "name": "Travail",
+      "icon": "📊",
+      "color": "#8BE9FD"
+    },
+    {
+      "type": "service",
       "name": "Mon Blog",
       "url": "https://monblog.com",
       "icon": "images/logo.png",
@@ -172,14 +252,21 @@ Sur l'ordinateur 2 :
 }
 ```
 
-**Champs :**
+**Champs pour un service :**
+- `type` : "service" (obligatoire)
 - `name` : Nom du service (affiché sur la carte)
 - `url` : URL complète avec https://
 - `icon` : Emoji (🎬) OU chemin vers image (images/logo.png)
 - `iconType` : "emoji" ou "image"
 - `color` : Code couleur hexadécimal
 
-**💡 Astuce :** L'ordre dans le fichier JSON correspond à l'ordre d'affichage des cartes !
+**Champs pour un séparateur :**
+- `type` : "separator" (obligatoire)
+- `name` : Titre du séparateur (optionnel)
+- `icon` : Emoji pour le séparateur (optionnel, par défaut "━")
+- `color` : Code couleur hexadécimal
+
+**💡 Astuce :** L'ordre dans le fichier JSON correspond à l'ordre d'affichage des cartes et séparateurs !
 
 ## 🎨 Couleurs Dracula disponibles
 
@@ -312,6 +399,7 @@ localStorage.removeItem('homepage_services');
 ✅ **Images** - Nom original conservé (pas de renommage)  
 ✅ **Rapide** - Cartes compactes, interface réactive  
 ✅ **Réorganisable** - Glisser-déposer intuitif  
+✅ **Séparateurs** - Organisez en sections visuelles  
 ✅ **Sauvegarde flexible** - localStorage + export manuel  
 ✅ **Multi-navigateurs** - Partagez via services.json  
 
@@ -322,25 +410,30 @@ localStorage.removeItem('homepage_services');
 - ✏️ Le bouton **modifier** est à **gauche** de la carte
 - × Le bouton **supprimer** est à **droite** de la carte
 - 🖐️ Cliquez et glissez sur la carte pour la déplacer
+- 📐 Utilisez les **séparateurs** pour organiser en sections
 - 📷 Les images gardent leur **nom original**
-- 💾 L'ordre des services est conservé dans services.json
+- 💾 L'ordre des services et séparateurs est conservé dans services.json
 
 ## 🎯 Cas d'usage
 
 ### 👤 Usage personnel
 - Page d'accueil personnalisée du navigateur
 - Accès rapide à vos outils quotidiens
-- Organisation par catégories (travail, loisirs, etc.)
+- Organisation par catégories avec séparateurs (travail, loisirs, etc.)
+- Sections par fréquence d'utilisation (quotidien, hebdomadaire, occasionnel)
 
 ### 👥 Équipe / Famille
 - Partagez services.json via cloud
 - Tout le monde a les mêmes raccourcis
 - Chacun peut personnaliser son ordre
+- Sections par projet ou par membre de l'équipe
 
 ### 🏢 Professionnel
 - Dashboard d'outils internes
 - Liens vers documentation
 - Environnements de dev (staging, prod, etc.)
+- Organisation par projet avec séparateurs visuels
+- Sections par type d'outil (monitoring, CI/CD, communication, etc.)
 
 ## 🔐 Confidentialité et Sécurité
 

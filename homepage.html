@@ -154,6 +154,50 @@
             background: #5a5d6f;
         }
 
+        .separator-card {
+            grid-column: 1 / -1;
+            background: transparent;
+            border: none;
+            padding: 20px 0;
+            cursor: move;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .separator-card:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .separator-card.dragging {
+            opacity: 0.5;
+        }
+
+        .separator-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, transparent, currentColor, transparent);
+            opacity: 0.5;
+        }
+
+        .separator-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 20px;
+            background: #44475A;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+            white-space: nowrap;
+        }
+
+        .separator-icon {
+            font-size: 1.3em;
+        }
+
         .service-icon {
             font-size: 2.2em;
             margin-bottom: 8px;
@@ -393,6 +437,7 @@
     <div class="container">
         <header>
             <div class="header-buttons">
+                <button class="header-btn" onclick="addSeparator()" title="Ajouter un séparateur">📐 Séparateur</button>
                 <button class="header-btn" onclick="exportServices()" title="Ctrl+S">💾 Sauvegarder</button>
                 <button class="header-btn" onclick="importServices()" title="Ctrl+O">📥 Charger</button>
             </div>
@@ -417,15 +462,32 @@
         <div class="modal-content">
             <h2 class="modal-header" id="modalTitle">➕ Nouveau Service</h2>
             <form id="serviceForm">
-                <div class="form-group">
+                <div class="form-group" id="typeGroup">
+                    <label>Type</label>
+                    <div style="display: flex; gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; flex: 1; padding: 10px; background: #282A36; border-radius: 8px; border: 2px solid #6272A4;">
+                            <input type="radio" name="itemType" value="service" checked onchange="toggleFormFields()">
+                            <span>🔗 Service</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; flex: 1; padding: 10px; background: #282A36; border-radius: 8px; border: 2px solid #6272A4;">
+                            <input type="radio" name="itemType" value="separator" onchange="toggleFormFields()">
+                            <span>📐 Séparateur</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" id="nameGroup">
                     <label for="serviceName">Nom du service</label>
                     <input type="text" id="serviceName" required placeholder="Ex: YouTube">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="separatorNameGroup" style="display: none;">
+                    <label for="separatorName">Titre du séparateur</label>
+                    <input type="text" id="separatorName" placeholder="Ex: Travail, Loisirs, Outils...">
+                </div>
+                <div class="form-group" id="urlGroup">
                     <label for="serviceUrl">URL</label>
                     <input type="url" id="serviceUrl" required placeholder="Ex: https://youtube.com">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="iconGroup">
                     <label for="serviceIcon">Icône</label>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <input type="text" id="serviceIcon" placeholder="Ex: 🎬 (emoji)" maxlength="2" style="flex: 1;">
@@ -439,6 +501,10 @@
                         <img id="previewImg" style="width: 64px; height: 64px; object-fit: contain; border-radius: 8px; background: #282A36; padding: 5px;">
                         <button type="button" id="removeImage" style="margin-left: 10px; background: #FF5555; color: #F8F8F2; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Supprimer</button>
                     </div>
+                </div>
+                <div class="form-group" id="separatorIconGroup" style="display: none;">
+                    <label for="separatorIcon">Icône du séparateur</label>
+                    <input type="text" id="separatorIcon" placeholder="Ex: 📊, 🎮, 💼..." maxlength="2">
                 </div>
                 <div class="form-group">
                     <label>Couleur de la carte</label>
@@ -567,25 +633,56 @@
             servicesGrid.innerHTML = '';
             servicesToRender.forEach((service, index) => {
                 const card = document.createElement('div');
-                card.className = 'service-card';
-                card.style.background = service.color;
-                card.draggable = true;
-                card.dataset.index = index;
                 
-                let iconHtml;
-                if (service.iconType === 'image') {
-                    iconHtml = `<img src="${service.icon}" alt="icon" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><text y=%2230%22 font-size=%2230%22>❓</text></svg>'">`;
+                // Vérifier si c'est un séparateur
+                if (service.type === 'separator') {
+                    card.className = 'separator-card';
+                    card.style.color = service.color || '#8BE9FD';
+                    card.draggable = true;
+                    card.dataset.index = index;
+                    
+                    const icon = service.icon || '━';
+                    const title = service.name || '';
+                    
+                    card.innerHTML = `
+                        <div class="separator-line"></div>
+                        <div class="separator-content" style="color: ${service.color};">
+                            <span class="separator-icon">${icon}</span>
+                            <span>${title}</span>
+                        </div>
+                        <div class="separator-line"></div>
+                        <button class="delete-btn" onclick="deleteService(${index})" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">×</button>
+                    `;
                 } else {
-                    iconHtml = service.icon;
+                    // Service normal
+                    card.className = 'service-card';
+                    card.style.background = service.color;
+                    card.draggable = true;
+                    card.dataset.index = index;
+                    
+                    let iconHtml;
+                    if (service.iconType === 'image') {
+                        iconHtml = `<img src="${service.icon}" alt="icon" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><text y=%2230%22 font-size=%2230%22>❓</text></svg>'">`;
+                    } else {
+                        iconHtml = service.icon;
+                    }
+                    
+                    card.innerHTML = `
+                        <button class="edit-btn" onclick="editService(${index})">✏️</button>
+                        <button class="delete-btn" onclick="deleteService(${index})">×</button>
+                        <div class="service-icon">${iconHtml}</div>
+                        <div class="service-name">${service.name}</div>
+                        <div class="service-url">${service.url}</div>
+                    `;
+                    
+                    card.onclick = (e) => {
+                        if (!e.target.classList.contains('delete-btn') && 
+                            !e.target.classList.contains('edit-btn') &&
+                            !card.classList.contains('dragging')) {
+                            window.open(service.url, '_blank');
+                        }
+                    };
                 }
-                
-                card.innerHTML = `
-                    <button class="edit-btn" onclick="editService(${index})">✏️</button>
-                    <button class="delete-btn" onclick="deleteService(${index})">×</button>
-                    <div class="service-icon">${iconHtml}</div>
-                    <div class="service-name">${service.name}</div>
-                    <div class="service-url">${service.url}</div>
-                `;
                 
                 // Événements de drag and drop
                 card.addEventListener('dragstart', handleDragStart);
@@ -594,13 +691,6 @@
                 card.addEventListener('drop', handleDrop);
                 card.addEventListener('dragleave', handleDragLeave);
                 
-                card.onclick = (e) => {
-                    if (!e.target.classList.contains('delete-btn') && 
-                        !e.target.classList.contains('edit-btn') &&
-                        !card.classList.contains('dragging')) {
-                        window.open(service.url, '_blank');
-                    }
-                };
                 servicesGrid.appendChild(card);
             });
         }
@@ -667,6 +757,29 @@
             }
         }
 
+        // Basculer entre service et séparateur
+        function toggleFormFields() {
+            const isSeparator = document.querySelector('input[name="itemType"]:checked').value === 'separator';
+            
+            document.getElementById('nameGroup').style.display = isSeparator ? 'none' : 'block';
+            document.getElementById('urlGroup').style.display = isSeparator ? 'none' : 'block';
+            document.getElementById('iconGroup').style.display = isSeparator ? 'none' : 'block';
+            
+            document.getElementById('separatorNameGroup').style.display = isSeparator ? 'block' : 'none';
+            document.getElementById('separatorIconGroup').style.display = isSeparator ? 'block' : 'none';
+            
+            // Gérer les champs requis
+            document.getElementById('serviceName').required = !isSeparator;
+            document.getElementById('serviceUrl').required = !isSeparator;
+        }
+
+        // Ajouter un séparateur rapidement
+        function addSeparator() {
+            openAddModal();
+            document.querySelector('input[name="itemType"][value="separator"]').checked = true;
+            toggleFormFields();
+        }
+
         // Ouvrir le modal en mode ajout
         function openAddModal() {
             editingIndex = null;
@@ -674,6 +787,8 @@
             modalTitle.textContent = '➕ Nouveau Service';
             submitButton.textContent = 'Ajouter';
             serviceForm.reset();
+            document.querySelector('input[name="itemType"][value="service"]').checked = true;
+            toggleFormFields();
             selectedColor = '#6272A4';
             updateColorPicker();
             imagePreview.style.display = 'none';
@@ -686,23 +801,33 @@
             editingIndex = index;
             const service = services[index];
             
-            modalTitle.textContent = '✏️ Modifier le Service';
+            modalTitle.textContent = '✏️ Modifier';
             submitButton.textContent = 'Modifier';
             
-            document.getElementById('serviceName').value = service.name;
-            document.getElementById('serviceUrl').value = service.url;
-            
-            if (service.iconType === 'image') {
-                currentImageFile = null;
-                previewImg.src = service.icon;
-                imagePreview.style.display = 'block';
-                serviceIconInput.value = '';
-                serviceIconInput.disabled = true;
+            // Vérifier si c'est un séparateur
+            if (service.type === 'separator') {
+                document.querySelector('input[name="itemType"][value="separator"]').checked = true;
+                toggleFormFields();
+                document.getElementById('separatorName').value = service.name || '';
+                document.getElementById('separatorIcon').value = service.icon || '';
             } else {
-                serviceIconInput.value = service.icon;
-                currentImageFile = null;
-                imagePreview.style.display = 'none';
-                serviceIconInput.disabled = false;
+                document.querySelector('input[name="itemType"][value="service"]').checked = true;
+                toggleFormFields();
+                document.getElementById('serviceName').value = service.name;
+                document.getElementById('serviceUrl').value = service.url;
+                
+                if (service.iconType === 'image') {
+                    currentImageFile = null;
+                    previewImg.src = service.icon;
+                    imagePreview.style.display = 'block';
+                    serviceIconInput.value = '';
+                    serviceIconInput.disabled = true;
+                } else {
+                    serviceIconInput.value = service.icon;
+                    currentImageFile = null;
+                    imagePreview.style.display = 'none';
+                    serviceIconInput.disabled = false;
+                }
             }
             
             selectedColor = service.color;
@@ -715,42 +840,59 @@
         serviceForm.onsubmit = (e) => {
             e.preventDefault();
             
-            let iconValue, iconType;
+            const isSeparator = document.querySelector('input[name="itemType"]:checked').value === 'separator';
+            let serviceData;
             
-            if (currentImageFile || (editingIndex !== null && services[editingIndex].iconType === 'image' && imagePreview.style.display !== 'none')) {
-                if (currentImageFile) {
-                    const fileName = currentImageFile.name;
-                    iconValue = IMAGES_FOLDER + fileName;
-                    showNotification(`📷 Placez "${fileName}" dans le dossier images/`, '#FFB86C');
-                } else {
-                    iconValue = services[editingIndex].icon;
-                }
-                iconType = 'image';
+            if (isSeparator) {
+                // Créer un séparateur
+                serviceData = {
+                    type: 'separator',
+                    name: document.getElementById('separatorName').value.trim(),
+                    icon: document.getElementById('separatorIcon').value.trim() || '━',
+                    color: selectedColor
+                };
             } else {
-                iconValue = serviceIconInput.value.trim();
-                iconType = 'emoji';
+                // Créer un service
+                let iconValue, iconType;
                 
-                if (!iconValue) {
-                    showNotification('⚠️ Veuillez ajouter un emoji ou une image', '#FFB86C');
-                    return;
+                if (currentImageFile || (editingIndex !== null && services[editingIndex].iconType === 'image' && imagePreview.style.display !== 'none')) {
+                    if (currentImageFile) {
+                        const fileName = currentImageFile.name;
+                        iconValue = IMAGES_FOLDER + fileName;
+                        showNotification(`📷 Placez "${fileName}" dans le dossier images/`, '#FFB86C');
+                    } else {
+                        iconValue = services[editingIndex].icon;
+                    }
+                    iconType = 'image';
+                } else {
+                    iconValue = serviceIconInput.value.trim();
+                    iconType = 'emoji';
+                    
+                    if (!iconValue) {
+                        showNotification('⚠️ Veuillez ajouter un emoji ou une image', '#FFB86C');
+                        return;
+                    }
                 }
+                
+                serviceData = {
+                    type: 'service',
+                    name: document.getElementById('serviceName').value,
+                    url: document.getElementById('serviceUrl').value,
+                    icon: iconValue,
+                    iconType: iconType,
+                    color: selectedColor
+                };
             }
-            
-            const serviceData = {
-                name: document.getElementById('serviceName').value,
-                url: document.getElementById('serviceUrl').value,
-                icon: iconValue,
-                iconType: iconType,
-                color: selectedColor
-            };
 
             if (editingIndex !== null) {
                 services[editingIndex] = serviceData;
-                showNotification('✏️ Service modifié ! Pensez à sauvegarder (Ctrl+S)', '#50FA7B');
+                showNotification(isSeparator ? '✏️ Séparateur modifié !' : '✏️ Service modifié !', '#50FA7B');
             } else {
                 services.push(serviceData);
-                showNotification('✅ Service ajouté ! Pensez à sauvegarder (Ctrl+S)', '#50FA7B');
+                showNotification(isSeparator ? '✅ Séparateur ajouté !' : '✅ Service ajouté !', '#50FA7B');
             }
+            
+            showNotification('💾 Pensez à sauvegarder (Ctrl+S)', '#8BE9FD');
 
             saveToLocalStorage();
             renderServices();
