@@ -69,6 +69,13 @@
             font-size: 1.1em;
         }
 
+        .drag-hint {
+            color: #6272A4;
+            font-size: 0.85em;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
         .search-container {
             margin-bottom: 40px;
             text-align: center;
@@ -125,7 +132,7 @@
             border-radius: 12px;
             padding: 18px 12px;
             text-align: center;
-            cursor: pointer;
+            cursor: move;
             transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
             border: 2px solid transparent;
             position: relative;
@@ -135,6 +142,16 @@
             transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             border-color: #BD93F9;
+        }
+
+        .service-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .service-card.drag-over {
+            border-color: #50FA7B;
+            background: #5a5d6f;
         }
 
         .service-icon {
@@ -381,6 +398,7 @@
             </div>
             <h1>🌟 Ma Page d'Accueil</h1>
             <p class="subtitle">Accès rapide à vos services favoris</p>
+            <p class="drag-hint">💡 Glissez-déposez les cartes pour les réorganiser</p>
         </header>
 
         <div class="search-container">
@@ -551,6 +569,8 @@
                 const card = document.createElement('div');
                 card.className = 'service-card';
                 card.style.background = service.color;
+                card.draggable = true;
+                card.dataset.index = index;
                 
                 let iconHtml;
                 if (service.iconType === 'image') {
@@ -566,13 +586,85 @@
                     <div class="service-name">${service.name}</div>
                     <div class="service-url">${service.url}</div>
                 `;
+                
+                // Événements de drag and drop
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                card.addEventListener('dragover', handleDragOver);
+                card.addEventListener('drop', handleDrop);
+                card.addEventListener('dragleave', handleDragLeave);
+                
                 card.onclick = (e) => {
-                    if (!e.target.classList.contains('delete-btn') && !e.target.classList.contains('edit-btn')) {
+                    if (!e.target.classList.contains('delete-btn') && 
+                        !e.target.classList.contains('edit-btn') &&
+                        !card.classList.contains('dragging')) {
                         window.open(service.url, '_blank');
                     }
                 };
                 servicesGrid.appendChild(card);
             });
+        }
+
+        // Variables pour le drag and drop
+        let draggedElement = null;
+        let draggedIndex = null;
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            draggedIndex = parseInt(this.dataset.index);
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            // Nettoyer tous les drag-over
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.classList.remove('drag-over');
+            });
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            this.classList.remove('drag-over');
+            
+            if (draggedElement !== this) {
+                const dropIndex = parseInt(this.dataset.index);
+                
+                // Réorganiser le tableau
+                const draggedService = services[draggedIndex];
+                services.splice(draggedIndex, 1);
+                services.splice(dropIndex, 0, draggedService);
+                
+                // Sauvegarder et rafraîchir
+                saveToLocalStorage();
+                renderServices();
+                showNotification('✅ Service déplacé ! Pensez à sauvegarder (Ctrl+S)', '#50FA7B');
+            }
+            
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        // Ajouter l'effet drag-over
+        function handleDragEnter(e) {
+            if (this !== draggedElement) {
+                this.classList.add('drag-over');
+            }
         }
 
         // Ouvrir le modal en mode ajout
