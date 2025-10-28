@@ -76,28 +76,6 @@
             font-style: italic;
         }
 
-        .search-container {
-            margin-bottom: 40px;
-            text-align: center;
-        }
-
-        .search-box {
-            width: 100%;
-            max-width: 600px;
-            padding: 15px 20px;
-            background: #44475A;
-            border: 2px solid #6272A4;
-            border-radius: 25px;
-            color: #F8F8F2;
-            font-size: 1em;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        .search-box:focus {
-            border-color: #BD93F9;
-        }
-
         .add-button {
             position: fixed;
             bottom: 30px;
@@ -446,10 +424,6 @@
             <p class="drag-hint">💡 Glissez-déposez les cartes pour les réorganiser</p>
         </header>
 
-        <div class="search-container">
-            <input type="text" class="search-box" id="searchBox" placeholder="🔍 Rechercher un service...">
-        </div>
-
         <div class="services-grid" id="servicesGrid">
             <!-- Les services seront ajoutés ici dynamiquement -->
         </div>
@@ -552,7 +526,6 @@
         const addButton = document.getElementById('addButton');
         const cancelButton = document.getElementById('cancelButton');
         const serviceForm = document.getElementById('serviceForm');
-        const searchBox = document.getElementById('searchBox');
         const modalTitle = document.getElementById('modalTitle');
         const submitButton = document.getElementById('submitButton');
         const imageUpload = document.getElementById('imageUpload');
@@ -945,16 +918,6 @@
                 setTimeout(() => notification.remove(), 300);
             }, 5000);
         }
-
-        // Recherche
-        searchBox.oninput = (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filtered = services.filter(service => 
-                service.name.toLowerCase().includes(searchTerm) || 
-                service.url.toLowerCase().includes(searchTerm)
-            );
-            renderServices(filtered);
-        };
 
         // Gestion du modal
         addButton.onclick = openAddModal;

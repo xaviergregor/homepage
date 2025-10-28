@@ -28,7 +28,6 @@ C'est tout ! 🎉
 - 🗑️ **Supprimer** des services (bouton en haut à droite)
 - 🖐️ **Réorganiser** par glisser-déposer
 - 📐 **Séparateurs visuels** - Créez des sections (Travail, Loisirs, etc.)
-- 🔍 **Rechercher** parmi vos services
 - 🎨 **Personnaliser** avec 8 couleurs Dracula
 - 💾 **Sauvegarder** facilement (Ctrl+S)
 - 📱 **Interface compacte** - plus de services visibles
@@ -155,11 +154,6 @@ Les séparateurs permettent d'organiser vos services en sections visuelles comme
 ```
 
 **Astuce :** Vous pouvez créer des séparateurs sans titre ni icône pour de simples lignes de séparation !
-
-### 🔍 Rechercher un service
-- Tapez dans la barre de recherche en haut
-- Les services sont filtrés en temps réel
-- Fonctionne sur le nom et l'URL
 
 ## 💾 Sauvegarder vos modifications
 
